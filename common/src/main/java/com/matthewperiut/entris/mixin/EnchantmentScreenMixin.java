@@ -21,6 +21,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,8 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 
 import static com.matthewperiut.entris.BookShelvesUtil.countBookShelves;
-import static com.matthewperiut.entris.enchantment.EnchantmentHelp.disallowedEnchanting;
-import static com.matthewperiut.entris.enchantment.EnchantmentHelp.getPossibleEnchantments;
+import static com.matthewperiut.entris.enchantment.EnchantmentHelp.*;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 
 @Mixin(EnchantmentScreen.class)
@@ -135,8 +135,13 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
                 EnchantmentSelectButton b = this.addDrawableChild(new EnchantmentSelectButton(x + 92, y + 3 + (12 * ct), enchantment, (button -> {
                     if (tetrisGame.getScore() >= 1000) {
+                        World world = MinecraftClient.getInstance().world;
+                        if (rejectEnchantment(world, enchantmentSelectButtons, ((EnchantmentSelectButton)button))) {
+                            return;
+                        }
                         if (((EnchantmentSelectButton)button).increment()) {
                             tetrisGame.score -= 1000;
+                            updateAvailableEnchantButtons(world, enchantmentSelectButtons);
                         }
                     }
                 })));
