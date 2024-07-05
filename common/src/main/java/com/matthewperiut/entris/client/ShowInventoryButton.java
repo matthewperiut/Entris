@@ -16,12 +16,12 @@ import static com.matthewperiut.entris.Entris.MOD_ID;
 
 public class ShowInventoryButton extends ButtonWidget {
 
-    Identifier CHEST_BUTTON = Identifier.of(MOD_ID, "container/enchanting_table/chest_button");
-    Identifier CHEST_SLOT = Identifier.of(MOD_ID, "container/enchanting_table/chest_slot");
-    Identifier CHEST_HIGHLIGHT = Identifier.of(MOD_ID, "container/enchanting_table/chest_highlight");
+    Identifier CHEST_BUTTON = new Identifier(MOD_ID, "container/enchanting_table/chest_button");
+    Identifier CHEST_SLOT = new Identifier(MOD_ID, "container/enchanting_table/chest_slot");
+    Identifier CHEST_HIGHLIGHT = new Identifier(MOD_ID, "container/enchanting_table/chest_highlight");
 
-    Identifier CHEST_OPEN = Identifier.of(MOD_ID, "container/enchanting_table/chest_open");
-    Identifier CHEST = Identifier.of(MOD_ID, "container/enchanting_table/chest");
+    Identifier CHEST_OPEN = new Identifier(MOD_ID, "container/enchanting_table/chest_open");
+    Identifier CHEST = new Identifier(MOD_ID, "container/enchanting_table/chest");
 
     public ShowInventoryButton(int x, int y, PressAction onPress) {
         super(x, y, 18, 18, Text.empty(), onPress, new NarrationSupplier() {

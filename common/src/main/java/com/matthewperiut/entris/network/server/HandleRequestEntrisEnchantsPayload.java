@@ -24,7 +24,7 @@ public class HandleRequestEntrisEnchantsPayload {
 
             for (int i = 0; i < enchants.size(); i++) {
                 String[] enchant = enchants.get(i).split(" ");
-                enchantments.add(Identifier.of(enchant[0]));
+                enchantments.add(new Identifier(enchant[0]));
                 levels.add(Integer.parseInt(enchant[1]));
             }
 
@@ -47,7 +47,7 @@ public class HandleRequestEntrisEnchantsPayload {
                     Optional<RegistryEntry.Reference<Enchantment>> entry = server.getOverworld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(enchantment);
                     RegistryEntry<Enchantment> H = server.getOverworld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).entryOf(entry.get().registryKey());
 
-                    stack.addEnchantment(H, level);
+                    stack.addEnchantment(H.value(), level);
                 }
 
                 player.currentScreenHandler.getSlot(0).setStack(stack);

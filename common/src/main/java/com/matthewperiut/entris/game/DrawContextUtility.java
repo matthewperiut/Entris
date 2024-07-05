@@ -15,7 +15,8 @@ public class DrawContextUtility {
         RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
         RenderSystem.enableBlend();
         Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
-        BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).texture(u1, v1).color(red, green, blue, alpha);
         bufferBuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).texture(u1, v2).color(red, green, blue, alpha);
         bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).texture(u2, v2).color(red, green, blue, alpha);
@@ -33,6 +34,6 @@ public class DrawContextUtility {
     public static void drawTransparentGuiTexture(DrawContext context, Identifier texture, int x, int y, int width, int height, float alpha) {
         GuiAtlasManager guiAtlasManager = ((DrawContextAccessor)context).getGuiAtlasManager();
         Sprite sprite = guiAtlasManager.getSprite(texture);
-        drawSprite(context, sprite, x, y, 0, width, height, alpha);
+        context.drawSprite(x, y, 0, width, height, sprite, 1.f, 1.f, 1.f, alpha);
     }
 }

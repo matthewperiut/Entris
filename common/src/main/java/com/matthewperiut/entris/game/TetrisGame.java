@@ -28,13 +28,13 @@ public class TetrisGame {
     }
 
     public static Identifier[] TILE_ID = {
-            Identifier.of(MOD_ID, "container/enchanting_table/tile_blue"),
-            Identifier.of(MOD_ID, "container/enchanting_table/tile_green"),
-            Identifier.of(MOD_ID, "container/enchanting_table/tile_light_blue"),
-            Identifier.of(MOD_ID, "container/enchanting_table/tile_orange"),
-            Identifier.of(MOD_ID, "container/enchanting_table/tile_purple"),
-            Identifier.of(MOD_ID, "container/enchanting_table/tile_red"),
-            Identifier.of(MOD_ID, "container/enchanting_table/tile_yellow")
+            new Identifier(MOD_ID, "container/enchanting_table/tile_blue"),
+            new Identifier(MOD_ID, "container/enchanting_table/tile_green"),
+            new Identifier(MOD_ID, "container/enchanting_table/tile_light_blue"),
+            new Identifier(MOD_ID, "container/enchanting_table/tile_orange"),
+            new Identifier(MOD_ID, "container/enchanting_table/tile_purple"),
+            new Identifier(MOD_ID, "container/enchanting_table/tile_red"),
+            new Identifier(MOD_ID, "container/enchanting_table/tile_yellow")
     };
 
     public Tile[][] screen = new Tile[10][24];

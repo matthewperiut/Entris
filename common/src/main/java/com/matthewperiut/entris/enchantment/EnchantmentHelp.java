@@ -1,5 +1,6 @@
 package com.matthewperiut.entris.enchantment;
 
+import com.ibm.icu.impl.CollectionSet;
 import com.matthewperiut.entris.client.EnchantmentSelectButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.Enchantment;
@@ -14,9 +15,19 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.enchantment.*;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class EnchantmentHelp {
     public static Text getEnchantmentText(World world, Identifier enchantment) {
-        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(enchantment).description();
+        return Text.translatable(world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(enchantment).getTranslationKey());
     }
 
     public static RegistryEntry<Enchantment> getEnchantmentRegistry(World world, Enchantment enchantment) {
@@ -24,13 +35,13 @@ public class EnchantmentHelp {
     }
 
     public static Text getEnchantmentText(Enchantment enchantment) {
-        return enchantment.description();
+        return Text.translatable(enchantment.getTranslationKey());
     }
     public static String getEnchantmentIdStr(World world, Enchantment enchantment) {
-        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(enchantment).getIdAsString();
+        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(enchantment).getKey().orElseThrow().getValue().getPath();
     }
     public static Enchantment getEnchantmentIdStr(World world, String enchantmentId) {
-        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(Identifier.of(enchantmentId));
+        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(Identifier.tryParse(enchantmentId));
     }
 
     public static Enchantment[] getPossibleEnchantments(World world, ItemStack itemStack) {
@@ -44,11 +55,12 @@ public class EnchantmentHelp {
     }
 
     public static boolean disallowedEnchanting(Enchantment enchantment) {
-        return enchantment.description().toString().toLowerCase().contains("mending") ||
-        enchantment.description().toString().toLowerCase().contains("frost_walker") ||
-        enchantment.description().toString().toLowerCase().contains("swift_sneak") ||
-        enchantment.description().toString().toLowerCase().contains("soul_speed") ||
-        enchantment.description().toString().toLowerCase().contains("curse");
+        return enchantment instanceof MendingEnchantment ||
+                enchantment instanceof FrostWalkerEnchantment ||
+                enchantment instanceof SwiftSneakEnchantment ||
+                enchantment instanceof SoulSpeedEnchantment ||
+                enchantment instanceof BindingCurseEnchantment ||
+                enchantment instanceof VanishingCurseEnchantment;
     }
 
     public static boolean rejectEnchantment(World world, ArrayList<EnchantmentSelectButton> enchants, EnchantmentSelectButton wantedEnchantmentButton) {
@@ -56,6 +68,9 @@ public class EnchantmentHelp {
         Enchantment wantedEnchantment = wantedEnchantmentButton.enchantment;
 
         for (EnchantmentSelectButton enchantButton : enchants) {
+            if (wantedEnchantment.equals(enchantButton))
+                continue;
+
             if (enchantButton.number > 0) {
                 includedEnchants.add(enchantButton.enchantment);
             }
@@ -66,7 +81,9 @@ public class EnchantmentHelp {
             RegistryEntry<Enchantment> included = getEnchantmentRegistry(world, wantedEnchantment);
             RegistryEntry<Enchantment> wanted = getEnchantmentRegistry(world, e);
             if (!included.equals(wanted)) {
-                canBeCombined  = Enchantment.canBeCombined(included, wanted);
+                ArrayList<RegistryEntry<Enchantment>> registryEntries = new ArrayList<>();
+                registryEntries.add(included);
+                canBeCombined = EnchantmentHelper.isCompatible(registryEntries, e);
             }
         }
 
@@ -89,7 +106,9 @@ public class EnchantmentHelp {
                 RegistryEntry<Enchantment> included = getEnchantmentRegistry(world, includedButton.enchantment);
                 RegistryEntry<Enchantment> wanted = getEnchantmentRegistry(world, enchantButton.enchantment);
                 if (!included.equals(wanted)) {
-                    if(!Enchantment.canBeCombined(included, wanted)) {
+                    ArrayList<RegistryEntry<Enchantment>> registryEntries = new ArrayList<>();
+                    registryEntries.add(included);
+                    if(!EnchantmentHelper.isCompatible(registryEntries, enchantButton.enchantment)) {
                         enchantButton.active = false;
                     }
                 }

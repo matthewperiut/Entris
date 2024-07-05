@@ -177,8 +177,8 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         super(handler, inventory, title);
     }
 
-    private static final Identifier ENTRIS = Identifier.of(Entris.MOD_ID, "textures/gui/container/entris.png");
-    private static final Identifier INVENTORY = Identifier.of(Entris.MOD_ID, "textures/gui/container/inventory.png");
+    private static final Identifier ENTRIS = new Identifier(Entris.MOD_ID, "textures/gui/container/entris.png");
+    private static final Identifier INVENTORY = new Identifier(Entris.MOD_ID, "textures/gui/container/inventory.png");
 
     @Unique
     protected int entrisBackgroundWidth = 176;
