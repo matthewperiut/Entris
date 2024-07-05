@@ -1,7 +1,7 @@
 package com.matthewperiut.entris.game;
 
-import com.matthewperiut.entris.network.ClientNetworkHelper;
 import com.matthewperiut.entris.network.payload.FinishEntrisPayload;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
@@ -195,7 +195,8 @@ public class TetrisGame {
         }
 
         if (gameOver && !sentServerScore) {
-            ClientNetworkHelper.send(new FinishEntrisPayload(score));
+            FinishEntrisPayload payload = new FinishEntrisPayload(score);
+            NetworkManager.sendToServer(payload.getId(), payload.getPacket());
             sentServerScore = true;
         }
 

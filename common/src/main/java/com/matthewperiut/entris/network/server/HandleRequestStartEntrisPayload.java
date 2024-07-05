@@ -3,9 +3,10 @@ package com.matthewperiut.entris.network.server;
 import com.matthewperiut.entris.BookShelvesUtil;
 import com.matthewperiut.entris.Entris;
 import com.matthewperiut.entris.client.SlotEnabler;
-import com.matthewperiut.entris.network.ServerNetworkHelper;
 import com.matthewperiut.entris.network.payload.AllowEntrisPayload;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.item.Items;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -13,37 +14,43 @@ import static com.matthewperiut.entris.Entris.MARGIN_OF_ERROR_TIME;
 import static com.matthewperiut.entris.Entris.playerDataMap;
 import static net.minecraft.util.math.MathHelper.ceil;
 
-public class HandleRequestStartEntrisPayload {
+public class HandleRequestStartEntrisPayload implements NetworkManager.NetworkReceiver {
     public static void handle(ServerPlayerEntity player, int requiredLevels) {
         int requiredLapis = ceil(requiredLevels / 10.f);
 
         if (player.isCreative()) {
             playerDataMap.put(player, new Entris.PlayerData(System.currentTimeMillis(), (requiredLevels * 6) + MARGIN_OF_ERROR_TIME));
-            ServerNetworkHelper.send(player, new AllowEntrisPayload(true));
+            AllowEntrisPayload payload = new AllowEntrisPayload(true);
+            NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
             return;
         }
 
         if (requiredLevels > 30) {
-            ServerNetworkHelper.send(player, new AllowEntrisPayload(false));
+            AllowEntrisPayload payload = new AllowEntrisPayload(false);
+            NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
             return;
         }
 
         int bookshelveMaxLevel = (int) (4 + (1.74* BookShelvesUtil.countBookShelves(player)));
         if (requiredLevels > bookshelveMaxLevel) {
-            ServerNetworkHelper.send(player, new AllowEntrisPayload(false));
+            AllowEntrisPayload payload = new AllowEntrisPayload(false);
+            NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
             return;
         }
 
         if (player.currentScreenHandler.getSlot(0).getStack().hasEnchantments()){
-            ServerNetworkHelper.send(player, new AllowEntrisPayload(false));
+            AllowEntrisPayload payload = new AllowEntrisPayload(false);
+            NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
             return;
         }
         if (!player.currentScreenHandler.getSlot(0).getStack().isEnchantable()){
-            ServerNetworkHelper.send(player, new AllowEntrisPayload(false));
+            AllowEntrisPayload payload = new AllowEntrisPayload(false);
+            NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
             return;
         }
         if (player.currentScreenHandler.getSlot(0).getStack().getItem() == Items.BOOK){
-            ServerNetworkHelper.send(player, new AllowEntrisPayload(false));
+            AllowEntrisPayload payload = new AllowEntrisPayload(false);
+            NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
             return;
         }
 
@@ -56,13 +63,20 @@ public class HandleRequestStartEntrisPayload {
 
                     // todo: check if the item is valid
                     ((SlotEnabler) player.currentScreenHandler.getSlot(0)).setCanTake(false);
-                    ServerNetworkHelper.send(player, new AllowEntrisPayload(true));
+                    AllowEntrisPayload payload = new AllowEntrisPayload(true);
+                    NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
                     playerDataMap.put(player, new Entris.PlayerData(System.currentTimeMillis(), (requiredLevels * 6) + MARGIN_OF_ERROR_TIME));
                     return;
                 }
             }
 
-            ServerNetworkHelper.send(player, new AllowEntrisPayload(false));
+            AllowEntrisPayload payload = new AllowEntrisPayload(false);
+            NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
         }
+    }
+
+    @Override
+    public void receive(PacketByteBuf buf, NetworkManager.PacketContext context) {
+        handle((ServerPlayerEntity) context.getPlayer(), buf.getInt(0));
     }
 }

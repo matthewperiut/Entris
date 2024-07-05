@@ -81,8 +81,8 @@ public class EnchantmentHelp {
             RegistryEntry<Enchantment> included = getEnchantmentRegistry(world, wantedEnchantment);
             RegistryEntry<Enchantment> wanted = getEnchantmentRegistry(world, e);
             if (!included.equals(wanted)) {
-                ArrayList<RegistryEntry<Enchantment>> registryEntries = new ArrayList<>();
-                registryEntries.add(included);
+                ArrayList<Enchantment> registryEntries = new ArrayList<>();
+                registryEntries.add(wantedEnchantment);
                 canBeCombined = EnchantmentHelper.isCompatible(registryEntries, e);
             }
         }
@@ -106,8 +106,8 @@ public class EnchantmentHelp {
                 RegistryEntry<Enchantment> included = getEnchantmentRegistry(world, includedButton.enchantment);
                 RegistryEntry<Enchantment> wanted = getEnchantmentRegistry(world, enchantButton.enchantment);
                 if (!included.equals(wanted)) {
-                    ArrayList<RegistryEntry<Enchantment>> registryEntries = new ArrayList<>();
-                    registryEntries.add(included);
+                    ArrayList<Enchantment> registryEntries = new ArrayList<>();
+                    registryEntries.add(includedButton.enchantment);
                     if(!EnchantmentHelper.isCompatible(registryEntries, enchantButton.enchantment)) {
                         enchantButton.active = false;
                     }

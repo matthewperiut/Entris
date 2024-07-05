@@ -1,34 +1,25 @@
 package com.matthewperiut.entris.network.payload;
 
 import com.matthewperiut.entris.network.EntrisNetworkingConstants;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
+import io.netty.buffer.Unpooled;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
-public record FinishEntrisPayload(int score) implements CustomPayload {
-    public static final PacketCodec<ByteBuf, Integer> PACKET_CODEC = new PacketCodec<ByteBuf, Integer>() {
-        @Override
-        public Integer decode(ByteBuf byteBuf) {
-            // Read an integer from the ByteBuf
-            return byteBuf.readInt();
-        }
-
-        @Override
-        public void encode(ByteBuf byteBuf, Integer value) {
-            // Write the integer to the ByteBuf
-            byteBuf.writeInt(value);
-        }
-    };
-
-    public static final Id<FinishEntrisPayload> ID = new Id<>(EntrisNetworkingConstants.FINISH_ENTRIS_GAME_PACKET_ID);
-    public static final PacketCodec<RegistryByteBuf, FinishEntrisPayload> CODEC =
-            PacketCodec.tuple(PACKET_CODEC,
-                    FinishEntrisPayload::score,
-                    FinishEntrisPayload::new);
+public class FinishEntrisPayload implements Payload {
+    int score;
+    public FinishEntrisPayload(int score) {
+        this.score = score;
+    }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
-        return ID;
+    public Identifier getId() {
+        return EntrisNetworkingConstants.FINISH_ENTRIS_GAME_PACKET_ID;
+    }
+
+    @Override
+    public PacketByteBuf getPacket() {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeInt(score);
+        return buf;
     }
 }

@@ -1,10 +1,12 @@
 package com.matthewperiut.entris.network.server;
 
 import com.matthewperiut.entris.client.SlotEnabler;
-import com.matthewperiut.entris.network.ServerNetworkHelper;
 import com.matthewperiut.entris.network.payload.AllowEntrisPayload;
+import com.matthewperiut.entris.network.payload.RequestEntrisEnchantsPayload;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
@@ -16,7 +18,7 @@ import java.util.Optional;
 
 import static com.matthewperiut.entris.Entris.playerDataMap;
 
-public class HandleRequestEntrisEnchantsPayload {
+public class HandleRequestEntrisEnchantsPayload implements NetworkManager.NetworkReceiver {
     public static void handle(MinecraftServer server, ServerPlayerEntity player, ArrayList<String> enchants)
         {
             ArrayList<Identifier> enchantments = new ArrayList<>();
@@ -24,7 +26,7 @@ public class HandleRequestEntrisEnchantsPayload {
 
             for (int i = 0; i < enchants.size(); i++) {
                 String[] enchant = enchants.get(i).split(" ");
-                enchantments.add(new Identifier(enchant[0]));
+                enchantments.add(Identifier.tryParse(enchant[0]));
                 levels.add(Integer.parseInt(enchant[1]));
             }
 
@@ -34,7 +36,8 @@ public class HandleRequestEntrisEnchantsPayload {
             }
 
             if (ct * 1000 > playerDataMap.get(player).score) {
-                ServerNetworkHelper.send(player, new AllowEntrisPayload(false));
+                AllowEntrisPayload payload = new AllowEntrisPayload(false);
+                NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
                 playerDataMap.remove(player);
             } else {
                 // Apply enchants from enchantments arraylist
@@ -44,14 +47,17 @@ public class HandleRequestEntrisEnchantsPayload {
                     int level = levels.get(i);
 
                     // why is modern mc like this?
-                    Optional<RegistryEntry.Reference<Enchantment>> entry = server.getOverworld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(enchantment);
-                    RegistryEntry<Enchantment> H = server.getOverworld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).entryOf(entry.get().registryKey());
-
-                    stack.addEnchantment(H.value(), level);
+                    Enchantment H = server.getOverworld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(enchantment);
+                    stack.addEnchantment(H, level);
                 }
 
                 player.currentScreenHandler.getSlot(0).setStack(stack);
                 ((SlotEnabler) player.currentScreenHandler.getSlot(0)).setCanTake(true);
             }
         }
+
+    @Override
+    public void receive(PacketByteBuf buf, NetworkManager.PacketContext context) {
+        handle(context.getPlayer().getServer(), (ServerPlayerEntity) context.getPlayer(), RequestEntrisEnchantsPayload.read(buf));
     }
+}

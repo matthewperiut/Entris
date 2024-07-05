@@ -4,9 +4,9 @@ import com.matthewperiut.entris.Entris;
 import com.matthewperiut.entris.client.*;
 import com.matthewperiut.entris.enchantment.EnchantmentHelp;
 import com.matthewperiut.entris.game.TetrisGame;
-import com.matthewperiut.entris.network.ClientNetworkHelper;
 import com.matthewperiut.entris.network.payload.RequestEntrisEnchantsPayload;
 import com.matthewperiut.entris.network.payload.RequestStartEntrisPayload;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
@@ -85,7 +85,8 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         })));
 
         startGameButton = this.addDrawableChild(new StartGameButton(x + 15, y + 106, (button -> {
-            ClientNetworkHelper.send(new RequestStartEntrisPayload(numberHolder.getNumber()));
+            RequestStartEntrisPayload payload = new RequestStartEntrisPayload(numberHolder.getNumber());
+            NetworkManager.sendToServer(payload.getId(), payload.getPacket());
             clearEnchantmentList();
         })));
 
@@ -98,11 +99,11 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
                     enchantments.add(EnchantmentHelp.getEnchantmentIdStr(MinecraftClient.getInstance().world, e.enchantment) + " " + e.number);
                 }
             }
-
-            ClientNetworkHelper.send(new RequestEntrisEnchantsPayload(enchantments));
+            RequestEntrisEnchantsPayload payload = new RequestEntrisEnchantsPayload(enchantments);
+            NetworkManager.sendToServer(payload.getId(), payload.getPacket());
 
             clearEnchantmentList();
-            MinecraftClient.getInstance().player.playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE);
+            MinecraftClient.getInstance().player.playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 1.f, 1.f);
         })));
         submitEnchantmentButton.visible = false;
         submitEnchantmentButton.active = false;

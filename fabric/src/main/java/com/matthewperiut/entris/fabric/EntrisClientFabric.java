@@ -17,16 +17,6 @@ import net.minecraft.screen.EnchantmentScreenHandler;
 public class EntrisClientFabric implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(AllowEntrisPayload.ID, (payload, context) -> {
-            context.client().execute(() -> {
-                HandleAllowEntrisPayload.handle(payload.allow());
-            });
-        });
 
-        ClientPlayNetworking.registerGlobalReceiver(ValidEntrisScorePayload.ID, (payload, context) -> {
-            context.client().execute(() -> {
-                HandleValidEntrisScorePayload.handle(payload.score());
-            });
-        });
     }
 }
