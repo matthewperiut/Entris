@@ -11,8 +11,9 @@ public class HandleValidEntrisScorePayload implements NetworkManager.NetworkRece
         if (MinecraftClient.getInstance().currentScreen instanceof EnchantmentScreen enchantmentScreenHandler) {
             if (score > 0)
                 ((ClientEntrisInterface)enchantmentScreenHandler).validifyScore(score);
-            else
-                ((ClientEntrisInterface)enchantmentScreenHandler).errorHandling();
+            else {
+
+            }
         }
     }
 
