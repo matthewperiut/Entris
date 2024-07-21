@@ -7,17 +7,17 @@ import net.minecraft.util.Identifier;
 
 public class SoundHelper {
 
-    public static final Identifier MOVE_SOUND_ID = new Identifier("entris:move");
+    public static final Identifier MOVE_SOUND_ID = Identifier.of("entris", "move");
     public static SoundEvent MOVE_SOUND_EVENT = SoundEvent.of(MOVE_SOUND_ID);
-    public static final Identifier HARD_DROP_SOUND_ID = new Identifier("entris:hard_drop");
+    public static final Identifier HARD_DROP_SOUND_ID = Identifier.of("entris", "hard_drop");
     public static SoundEvent HARD_DROP_SOUND_EVENT = SoundEvent.of(HARD_DROP_SOUND_ID);
-    public static final Identifier FINALIZE_SOUND_ID = new Identifier("entris:finalize");
+    public static final Identifier FINALIZE_SOUND_ID = Identifier.of("entris", "finalize");
     public static SoundEvent FINALIZE_SOUND_EVENT = SoundEvent.of(FINALIZE_SOUND_ID);
-    public static final Identifier ROTATE_SOUND_ID = new Identifier("entris:rotate");
+    public static final Identifier ROTATE_SOUND_ID = Identifier.of("entris", "rotate");
     public static SoundEvent ROTATE_SOUND_EVENT = SoundEvent.of(ROTATE_SOUND_ID);
-    public static final Identifier SWAP_SOUND_ID = new Identifier("entris:swap");
+    public static final Identifier SWAP_SOUND_ID = Identifier.of("entris", "swap");
     public static SoundEvent SWAP_SOUND_EVENT = SoundEvent.of(SWAP_SOUND_ID);
-    public static final Identifier TICK_SOUND_ID = new Identifier("entris:tick");
+    public static final Identifier TICK_SOUND_ID = Identifier.of("entris", "tick");
     public static SoundEvent TICK_SOUND_EVENT = SoundEvent.of(TICK_SOUND_ID);
 
 

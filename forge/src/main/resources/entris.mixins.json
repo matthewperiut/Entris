@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.matthewperiut.entris.mixin.neoforge",
+  "package": "com.matthewperiut.entris.mixin.forge",
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.8",
   "client": [

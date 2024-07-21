@@ -1,24 +1,20 @@
 package com.matthewperiut.entris.network.server;
 
 import com.matthewperiut.entris.client.SlotEnabler;
+import com.matthewperiut.entris.network.ServerNetworkHelper;
 import com.matthewperiut.entris.network.payload.AllowEntrisPayload;
-import com.matthewperiut.entris.network.payload.RequestEntrisEnchantsPayload;
-import dev.architectury.networking.NetworkManager;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static com.matthewperiut.entris.Entris.playerDataMap;
 
-public class HandleRequestEntrisEnchantsPayload implements NetworkManager.NetworkReceiver {
+public class HandleRequestEntrisEnchantsPayload {
     public static void handle(MinecraftServer server, ServerPlayerEntity player, ArrayList<String> enchants)
         {
             ArrayList<Identifier> enchantments = new ArrayList<>();
@@ -36,8 +32,7 @@ public class HandleRequestEntrisEnchantsPayload implements NetworkManager.Networ
             }
 
             if (ct * 1000 > playerDataMap.get(player).score) {
-                AllowEntrisPayload payload = new AllowEntrisPayload(false);
-                NetworkManager.sendToPlayer(player, payload.getId(), payload.getPacket());
+                ServerNetworkHelper.send(player, new AllowEntrisPayload(false));
                 playerDataMap.remove(player);
             } else {
                 // Apply enchants from enchantments arraylist
@@ -48,6 +43,7 @@ public class HandleRequestEntrisEnchantsPayload implements NetworkManager.Networ
 
                     // why is modern mc like this?
                     Enchantment H = server.getOverworld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(enchantment);
+
                     stack.addEnchantment(H, level);
                 }
 
@@ -55,9 +51,4 @@ public class HandleRequestEntrisEnchantsPayload implements NetworkManager.Networ
                 ((SlotEnabler) player.currentScreenHandler.getSlot(0)).setCanTake(true);
             }
         }
-
-    @Override
-    public void receive(PacketByteBuf buf, NetworkManager.PacketContext context) {
-        handle(context.getPlayer().getServer(), (ServerPlayerEntity) context.getPlayer(), RequestEntrisEnchantsPayload.read(buf));
     }
-}

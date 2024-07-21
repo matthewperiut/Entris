@@ -4,9 +4,9 @@ import com.matthewperiut.entris.Entris;
 import com.matthewperiut.entris.client.*;
 import com.matthewperiut.entris.enchantment.EnchantmentHelp;
 import com.matthewperiut.entris.game.TetrisGame;
+import com.matthewperiut.entris.network.ClientNetworkHelper;
 import com.matthewperiut.entris.network.payload.RequestEntrisEnchantsPayload;
 import com.matthewperiut.entris.network.payload.RequestStartEntrisPayload;
-import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
@@ -21,7 +21,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,7 +31,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 
 import static com.matthewperiut.entris.BookShelvesUtil.countBookShelves;
-import static com.matthewperiut.entris.enchantment.EnchantmentHelp.*;
+import static com.matthewperiut.entris.enchantment.EnchantmentHelp.disallowedEnchanting;
+import static com.matthewperiut.entris.enchantment.EnchantmentHelp.getPossibleEnchantments;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 
 @Mixin(EnchantmentScreen.class)
@@ -85,8 +85,7 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         })));
 
         startGameButton = this.addDrawableChild(new StartGameButton(x + 15, y + 106, (button -> {
-            RequestStartEntrisPayload payload = new RequestStartEntrisPayload(numberHolder.getNumber());
-            NetworkManager.sendToServer(payload.getId(), payload.getPacket());
+            ClientNetworkHelper.send(new RequestStartEntrisPayload(numberHolder.getNumber()));
             clearEnchantmentList();
         })));
 
@@ -99,11 +98,11 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
                     enchantments.add(EnchantmentHelp.getEnchantmentIdStr(MinecraftClient.getInstance().world, e.enchantment) + " " + e.number);
                 }
             }
-            RequestEntrisEnchantsPayload payload = new RequestEntrisEnchantsPayload(enchantments);
-            NetworkManager.sendToServer(payload.getId(), payload.getPacket());
+
+            ClientNetworkHelper.send(new RequestEntrisEnchantsPayload(enchantments));
 
             clearEnchantmentList();
-            MinecraftClient.getInstance().player.playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 1.f, 1.f);
+            MinecraftClient.getInstance().player.playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 1.0F, 1.0F);
         })));
         submitEnchantmentButton.visible = false;
         submitEnchantmentButton.active = false;
@@ -124,7 +123,7 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
     public void refreshEnchantmentList() {
         clearEnchantmentList();
 
-        ItemStack itemStack = handler.slots.getFirst().getStack();
+        ItemStack itemStack = handler.slots.get(0).getStack();
         if (itemStack != null) {
             Enchantment[] enchantments = getPossibleEnchantments(MinecraftClient.getInstance().world, itemStack);
 
@@ -136,13 +135,8 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
                 EnchantmentSelectButton b = this.addDrawableChild(new EnchantmentSelectButton(x + 92, y + 3 + (12 * ct), enchantment, (button -> {
                     if (tetrisGame.getScore() >= 1000) {
-                        World world = MinecraftClient.getInstance().world;
-                        if (rejectEnchantment(world, enchantmentSelectButtons, ((EnchantmentSelectButton)button))) {
-                            return;
-                        }
                         if (((EnchantmentSelectButton)button).increment()) {
                             tetrisGame.score -= 1000;
-                            updateAvailableEnchantButtons(world, enchantmentSelectButtons);
                         }
                     }
                 })));
@@ -178,8 +172,8 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         super(handler, inventory, title);
     }
 
-    private static final Identifier ENTRIS = new Identifier(Entris.MOD_ID, "textures/gui/container/entris.png");
-    private static final Identifier INVENTORY = new Identifier(Entris.MOD_ID, "textures/gui/container/inventory.png");
+    private static final Identifier ENTRIS = Identifier.of(Entris.MOD_ID, "textures/gui/container/entris.png");
+    private static final Identifier INVENTORY = Identifier.of(Entris.MOD_ID, "textures/gui/container/inventory.png");
 
     @Unique
     protected int entrisBackgroundWidth = 176;

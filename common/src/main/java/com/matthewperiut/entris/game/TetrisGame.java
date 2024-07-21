@@ -1,16 +1,12 @@
 package com.matthewperiut.entris.game;
 
+import com.matthewperiut.entris.network.ClientNetworkHelper;
 import com.matthewperiut.entris.network.payload.FinishEntrisPayload;
-import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 
 import static com.matthewperiut.entris.Entris.MOD_ID;
 import static org.lwjgl.glfw.GLFW.*;
@@ -28,13 +24,13 @@ public class TetrisGame {
     }
 
     public static Identifier[] TILE_ID = {
-            new Identifier(MOD_ID, "container/enchanting_table/tile_blue"),
-            new Identifier(MOD_ID, "container/enchanting_table/tile_green"),
-            new Identifier(MOD_ID, "container/enchanting_table/tile_light_blue"),
-            new Identifier(MOD_ID, "container/enchanting_table/tile_orange"),
-            new Identifier(MOD_ID, "container/enchanting_table/tile_purple"),
-            new Identifier(MOD_ID, "container/enchanting_table/tile_red"),
-            new Identifier(MOD_ID, "container/enchanting_table/tile_yellow")
+            Identifier.of(MOD_ID, "textures/gui/container/enchanting_table/tile_blue.png"),
+            Identifier.of(MOD_ID, "textures/gui/container/enchanting_table/tile_green.png"),
+            Identifier.of(MOD_ID, "textures/gui/container/enchanting_table/tile_light_blue.png"),
+            Identifier.of(MOD_ID, "textures/gui/container/enchanting_table/tile_orange.png"),
+            Identifier.of(MOD_ID, "textures/gui/container/enchanting_table/tile_purple.png"),
+            Identifier.of(MOD_ID, "textures/gui/container/enchanting_table/tile_red.png"),
+            Identifier.of(MOD_ID, "textures/gui/container/enchanting_table/tile_yellow.png")
     };
 
     public Tile[][] screen = new Tile[10][24];
@@ -84,7 +80,7 @@ public class TetrisGame {
             for (int j = 0; j < 20; j++) {
                 int id = screen[i][j].ordinal();
                 if (id > 0) {
-                    context.drawGuiTexture(TILE_ID[id - 1], x + (i * 8), y - (j * 8), 8, 8);
+                    context.drawTexture(TILE_ID[id - 1], x + (i * 8), y - (j * 8), 0, 0, 8, 8, 8, 8);
                 }
             }
         }
@@ -195,8 +191,7 @@ public class TetrisGame {
         }
 
         if (gameOver && !sentServerScore) {
-            FinishEntrisPayload payload = new FinishEntrisPayload(score);
-            NetworkManager.sendToServer(payload.getId(), payload.getPacket());
+            ClientNetworkHelper.send(new FinishEntrisPayload(score));
             sentServerScore = true;
         }
 
@@ -370,7 +365,7 @@ public class TetrisGame {
                     int tileY = y + j;
                     if (tileY >= 0 && tileY < 20 && tileX >= 0 && tileX < 10) {
                         int id = tetromino.getTileAt(i, j).ordinal();
-                        context.drawGuiTexture(TILE_ID[id - 1], offsetX + (tileX * 8), offsetY - (tileY * 8), 8, 8);
+                        context.drawTexture(TILE_ID[id - 1], offsetX + (tileX * 8), offsetY - (tileY * 8), 0, 0, 8, 8, 8, 8);
                     }
                 }
             }
@@ -385,7 +380,7 @@ public class TetrisGame {
                     int tileY = y + j;
                     if (tileY >= 0 && tileY < 20 && tileX >= 0 && tileX < 10) {
                         int id = tetromino.getTileAt(i, j).ordinal();
-                        DrawContextUtility.drawTransparentGuiTexture(context, TILE_ID[id - 1], offsetX + (tileX * 8), offsetY - (tileY * 8), 8, 8, 0.3f);
+                        DrawContextUtility.drawTransparentTexture(context, TILE_ID[id - 1], offsetX + (tileX * 8), offsetY - (tileY * 8), 8, 8, 0.3f);
                     }
                 }
             }

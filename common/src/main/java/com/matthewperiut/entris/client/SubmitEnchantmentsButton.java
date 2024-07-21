@@ -1,10 +1,7 @@
 package com.matthewperiut.entris.client;
 
-import com.matthewperiut.entris.enchantment.EnchantmentHelp;
-import com.matthewperiut.entris.enchantment.RomanNumeralUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.text.Text;
 
 public class SubmitEnchantmentsButton extends ButtonWidget {
@@ -14,8 +11,8 @@ public class SubmitEnchantmentsButton extends ButtonWidget {
     }
 
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.renderWidget(context, mouseX, mouseY, delta);
+    protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.renderButton(context, mouseX, mouseY, delta);
     }
 
     @Override

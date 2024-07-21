@@ -2,10 +2,7 @@ package com.matthewperiut.entris.client;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-
-import java.util.function.Supplier;
 
 public class StartGameButton extends ButtonWidget {
     public StartGameButton(int x, int y, PressAction onPress) {
@@ -13,8 +10,8 @@ public class StartGameButton extends ButtonWidget {
     }
 
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.renderWidget(context, mouseX, mouseY, delta);
+    protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.renderButton(context, mouseX, mouseY, delta);
     }
 
     @Override

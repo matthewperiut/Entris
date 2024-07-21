@@ -1,5 +1,6 @@
 package com.matthewperiut.entris.fabric;
 
+import com.matthewperiut.entris.EntrisClient;
 import com.matthewperiut.entris.client.ClientEntrisInterface;
 import com.matthewperiut.entris.network.client.HandleAllowEntrisPayload;
 import com.matthewperiut.entris.network.client.HandleValidEntrisScorePayload;
@@ -17,6 +18,6 @@ import net.minecraft.screen.EnchantmentScreenHandler;
 public class EntrisClientFabric implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-
+        EntrisClient.init();
     }
 }

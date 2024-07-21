@@ -1,25 +1,26 @@
 package com.matthewperiut.entris.network.payload;
 
 import com.matthewperiut.entris.network.EntrisNetworkingConstants;
-import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.FabricPacket;
+import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 
-public class FinishEntrisPayload implements Payload {
-    int score;
-    public FinishEntrisPayload(int score) {
-        this.score = score;
+public record FinishEntrisPayload(int score) implements FabricPacket {
+    public static final PacketType<FinishEntrisPayload> TYPE = PacketType.create(EntrisNetworkingConstants.FINISH_ENTRIS_GAME_PACKET_ID, FinishEntrisPayload::new);
+
+    public FinishEntrisPayload(PacketByteBuf byteBuf) {
+        // Read an integer from the ByteBuf
+        this(byteBuf.readInt());
     }
 
     @Override
-    public Identifier getId() {
-        return EntrisNetworkingConstants.FINISH_ENTRIS_GAME_PACKET_ID;
+    public void write(PacketByteBuf byteBuf) {
+        // Write the integer to the ByteBuf
+        byteBuf.writeInt(score);
     }
 
     @Override
-    public PacketByteBuf getPacket() {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeInt(score);
-        return buf;
+    public PacketType<?> getType() {
+        return TYPE;
     }
 }
