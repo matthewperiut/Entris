@@ -1,8 +1,11 @@
 package com.matthewperiut.entris.game;
 
+import com.matthewperiut.entris.EntrisClient;
+import com.matthewperiut.entris.mixin.KeyBindingAccessor;
 import com.matthewperiut.entris.network.ClientNetworkHelper;
 import com.matthewperiut.entris.network.payload.FinishEntrisPayload;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -115,12 +118,13 @@ public class TetrisGame {
             buttonCooldown--;
         } else {
             if (flipper) {
-                if (glfwGetKey(handle, GLFW.GLFW_KEY_LEFT) == GLFW_PRESS) {
+
+                if (glfwGetKey(handle, ((KeyBindingAccessor) EntrisClient.leftTetris).getBoundKey().getCode()) == GLFW_PRESS) {
                     leftRelease = false;
                     if (moveTetromino(-1, 0))
                         SoundHelper.moveSound();
                 }
-                if (glfwGetKey(handle, GLFW.GLFW_KEY_RIGHT) == GLFW_PRESS) {
+                if (glfwGetKey(handle, ((KeyBindingAccessor) EntrisClient.rightTetris).getBoundKey().getCode()) == GLFW_PRESS) {
                     rightRelease = false;
                     if (moveTetromino(1, 0))
                         SoundHelper.moveSound();
@@ -128,14 +132,14 @@ public class TetrisGame {
             }
         }
 
-        if (glfwGetKey(handle, GLFW.GLFW_KEY_LEFT) == GLFW_RELEASE) {
+        if (glfwGetKey(handle, ((KeyBindingAccessor) EntrisClient.leftTetris).getBoundKey().getCode()) == GLFW_RELEASE) {
             leftRelease = true;
         }
-        if (glfwGetKey(handle, GLFW.GLFW_KEY_RIGHT) == GLFW_RELEASE) {
+        if (glfwGetKey(handle, ((KeyBindingAccessor) EntrisClient.rightTetris).getBoundKey().getCode()) == GLFW_RELEASE) {
             rightRelease = true;
         }
 
-        if (glfwGetKey(handle, GLFW.GLFW_KEY_DOWN) == GLFW_PRESS) {
+        if (glfwGetKey(handle, ((KeyBindingAccessor) EntrisClient.downTetris).getBoundKey().getCode()) == GLFW_PRESS) {
             isDropping = true;
         } else {
             isDropping = false;
@@ -146,40 +150,33 @@ public class TetrisGame {
         if (gameOver || !isStarted)
             return false;
 
-        switch (keyCode) {
-            case GLFW.GLFW_KEY_LEFT:
-                if (leftRelease) {
-                    if (moveTetromino(-1, 0)) {
-                        SoundHelper.moveSound();
-                    }
-                    buttonCooldown = 2;
+        if (EntrisClient.leftTetris.matchesKey(keyCode, scanCode)) {
+            if (leftRelease) {
+                if (moveTetromino(-1, 0)) {
+                    SoundHelper.moveSound();
                 }
-                break;
-            case GLFW.GLFW_KEY_RIGHT:
-                if (rightRelease) {
-                    if (moveTetromino(1, 0)) {
-                        SoundHelper.moveSound();
-                    }
-                    buttonCooldown = 2;
+                buttonCooldown = 2;
+            }
+        }
+        else if (EntrisClient.rightTetris.matchesKey(keyCode, scanCode)) {
+            if (rightRelease) {
+                if (moveTetromino(1, 0)) {
+                    SoundHelper.moveSound();
                 }
-                break;
-            case GLFW.GLFW_KEY_DOWN:
-                break;
-            case GLFW.GLFW_KEY_SPACE:
-                hardDrop();
-                break;
-            case GLFW.GLFW_KEY_Z:
-                rotateTetromino(1);
-                break;
-            case GLFW.GLFW_KEY_X:
-            case GLFW.GLFW_KEY_UP:
-                rotateTetromino(-1);
-                break;
-            case GLFW.GLFW_KEY_C:
-                holdTetromino();
-                break;
-            default:
-                return false;
+                buttonCooldown = 2;
+            }
+        }
+        else if (EntrisClient.hardDropTetris.matchesKey(keyCode, scanCode)) {
+            hardDrop();
+        }
+        else if (EntrisClient.leftRotateTetris.matchesKey(keyCode, scanCode)) {
+            rotateTetromino(1);
+        }
+        else if (EntrisClient.rightRotateTetris.matchesKey(keyCode, scanCode) || EntrisClient.upTetris.matchesKey(keyCode, scanCode)) {
+            rotateTetromino(-1);
+        }
+        else if (EntrisClient.holdTetris.matchesKey(keyCode, scanCode)) {
+            holdTetromino();
         }
 
         return true;

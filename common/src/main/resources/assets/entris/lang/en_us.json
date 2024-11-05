@@ -1,0 +1,11 @@
+{
+  "category.entris.entris": "Entris",
+  "key.entris.left": "Move Left",
+  "key.entris.right": "Move Right",
+  "key.entris.down": "Soft Drop",
+  "key.entris.up": "Rotate (Up/CCW)",
+  "key.entris.hold": "Use Hold",
+  "key.entris.hard_drop": "Hard Drop",
+  "key.entris.right_rotate": "Rotate Clockwise",
+  "key.entris.left_rotate": "Rotate Counter-Clockwise"
+}

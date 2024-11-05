@@ -5,7 +5,7 @@ license = "MIT"
 
 [[mods]]
 modId = "entris"
-version = "0.1.0"
+version = "${version}"
 displayName = "Entris"
 authors = "Slainlight"
 description = '''
@@ -19,7 +19,7 @@ config = "entris-common.mixins.json"
 [[dependencies.entris]]
 modId="minecraft"
 type="required"
-versionRange="[1.21,1.22)"
+versionRange="[1.21,1.21.2]"
 
 [[dependencies.entris]]
 modId="neoforge"
