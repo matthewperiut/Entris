@@ -1,12 +1,18 @@
 package com.matthewperiut.entris.game;
 
 import com.matthewperiut.entris.EntrisClient;
+import com.matthewperiut.entris.mixin.DrawContextAccessor;
 import com.matthewperiut.entris.mixin.KeyBindingAccessor;
 import com.matthewperiut.entris.network.ClientNetworkHelper;
 import com.matthewperiut.entris.network.payload.FinishEntrisPayload;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.texture.GuiAtlasManager;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -83,11 +89,12 @@ public class TetrisGame {
         if (!isStarted)
             return;
 
+
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 20; j++) {
                 int id = screen[i][j].ordinal();
                 if (id > 0) {
-                    context.drawGuiTexture(TILE_ID[id - 1], x + (i * 8), y - (j * 8), 8, 8);
+                    context.drawGuiTexture(RenderLayer::getGuiTextured, TILE_ID[id - 1], x + (i * 8), y - (j * 8), 8, 8);
                 }
             }
         }
@@ -366,7 +373,7 @@ public class TetrisGame {
                     int tileY = y + j;
                     if (tileY >= 0 && tileY < 20 && tileX >= 0 && tileX < 10) {
                         int id = tetromino.getTileAt(i, j).ordinal();
-                        context.drawGuiTexture(TILE_ID[id - 1], offsetX + (tileX * 8), offsetY - (tileY * 8), 8, 8);
+                        context.drawGuiTexture(RenderLayer::getGuiTextured, TILE_ID[id - 1], offsetX + (tileX * 8), offsetY - (tileY * 8), 8, 8);
                     }
                 }
             }
@@ -374,6 +381,8 @@ public class TetrisGame {
     }
 
     private void renderTransparentTetromino(DrawContext context, Tetromino tetromino, int x, int y, int offsetX, int offsetY) {
+        GuiAtlasManager guiAtlasManager = ((DrawContextAccessor)context).getGuiAtlasManager();
+
         for (int j = 0; j < tetromino.getTiles().length; j++) {
             for (int i = 0; i < tetromino.getTiles()[j].length; i++) {
                 if (tetromino.getTileAt(i, j) != Tile.NONE) {
@@ -381,7 +390,8 @@ public class TetrisGame {
                     int tileY = y + j;
                     if (tileY >= 0 && tileY < 20 && tileX >= 0 && tileX < 10) {
                         int id = tetromino.getTileAt(i, j).ordinal();
-                        DrawContextUtility.drawTransparentGuiTexture(context, TILE_ID[id - 1], offsetX + (tileX * 8), offsetY - (tileY * 8), 8, 8, 0.3f);
+                        Sprite sprite = guiAtlasManager.getSprite(TILE_ID[id - 1]);
+                        context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, offsetX + (tileX * 8), offsetY - (tileY * 8), 8, 8, 0x64FFFFFF);
                     }
                 }
             }

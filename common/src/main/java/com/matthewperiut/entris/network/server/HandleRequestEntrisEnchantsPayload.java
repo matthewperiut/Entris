@@ -44,8 +44,7 @@ public class HandleRequestEntrisEnchantsPayload {
                     int level = levels.get(i);
 
                     // why is modern mc like this?
-                    Optional<RegistryEntry.Reference<Enchantment>> entry = server.getOverworld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(enchantment);
-                    RegistryEntry<Enchantment> H = server.getOverworld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).entryOf(entry.get().registryKey());
+                    RegistryEntry<Enchantment> H = server.getOverworld().getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT).get().getEntry(enchantment).get();
 
                     stack.addEnchantment(H, level);
                 }

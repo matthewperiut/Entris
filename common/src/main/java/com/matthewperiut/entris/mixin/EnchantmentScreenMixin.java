@@ -12,6 +12,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.PressableTextWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -190,7 +191,9 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         if (enableEntris) {
             int i = (this.width - this.entrisBackgroundWidth) / 2;
             int j = (this.height - this.entrisBackgroundHeight) / 2;
-            context.drawTexture(ENTRIS, i, j, 0, 0, this.entrisBackgroundWidth, this.entrisBackgroundHeight);
+            context.drawTexture(RenderLayer::getGuiTextured, ENTRIS, i, j, 0.0F, 0.0F, this.entrisBackgroundWidth, this.entrisBackgroundHeight, 256, 256);
+
+//            context.drawTexture(ENTRIS, i, j, 0, 0, this.entrisBackgroundWidth, this.entrisBackgroundHeight);
 
             int x = (this.width - this.entrisBackgroundWidth) / 2;
             int y = (this.height - this.entrisBackgroundHeight) / 2;
@@ -200,7 +203,8 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
             }
 
             if (showInventory)
-                context.drawTexture(INVENTORY, i, j, 0, 0, this.entrisBackgroundWidth, this.entrisBackgroundHeight);
+                context.drawTexture(RenderLayer::getGuiTextured, INVENTORY, i, j, 0.0F, 0.0F, this.entrisBackgroundWidth, this.entrisBackgroundHeight, 256, 256);
+
             ci.cancel();
         }
     }
@@ -333,6 +337,14 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == 256 && this.shouldCloseOnEsc()) {
+            this.close();
+            return true;
+        }
+        else if (this.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
+            this.close();
+            return true;
+        }
         if (enableEntris) {
             if(tetrisGame.input(keyCode, scanCode, modifiers)) {
                 return true;
@@ -343,7 +355,7 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
             numberHolder.input(keyCode);
         }
-        return super.keyPressed(keyCode, scanCode, modifiers); // Handle other keys as usual
+        return false; // Handle other keys as usual
     }
 
     private static long handle = -1;

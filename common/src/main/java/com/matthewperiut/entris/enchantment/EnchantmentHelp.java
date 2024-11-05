@@ -16,26 +16,26 @@ import java.util.List;
 
 public class EnchantmentHelp {
     public static Text getEnchantmentText(World world, Identifier enchantment) {
-        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(enchantment).description();
+        return world.getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT).get().get(enchantment).description();
     }
 
     public static RegistryEntry<Enchantment> getEnchantmentRegistry(World world, Enchantment enchantment) {
-        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(enchantment);
+        return world.getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT).get().getEntry(enchantment);
     }
 
     public static Text getEnchantmentText(Enchantment enchantment) {
         return enchantment.description();
     }
     public static String getEnchantmentIdStr(World world, Enchantment enchantment) {
-        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(enchantment).getIdAsString();
+        return world.getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT).get().getEntry(enchantment).getIdAsString();
     }
     public static Enchantment getEnchantmentIdStr(World world, String enchantmentId) {
-        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(Identifier.of(enchantmentId));
+        return world.getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT).get().get(Identifier.of(enchantmentId));
     }
 
     public static Enchantment[] getPossibleEnchantments(World world, ItemStack itemStack) {
         List<Enchantment> applicableEnchantments = new ArrayList<>();
-        for (Enchantment enchantment : world.getRegistryManager().get(RegistryKeys.ENCHANTMENT)) {
+        for (Enchantment enchantment : world.getRegistryManager().getOptional(RegistryKeys.ENCHANTMENT).get()) {
             if (enchantment.isAcceptableItem(itemStack)) {
                 applicableEnchantments.add(enchantment);
             }

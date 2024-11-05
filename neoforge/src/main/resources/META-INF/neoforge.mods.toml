@@ -19,7 +19,7 @@ config = "entris-common.mixins.json"
 [[dependencies.entris]]
 modId="minecraft"
 type="required"
-versionRange="[1.21,1.21.2]"
+versionRange="[1.21.2,1.22)"
 
 [[dependencies.entris]]
 modId="neoforge"
