@@ -65,6 +65,8 @@ public class EnchantmentHelp {
         for (Enchantment e : includedEnchants) {
             RegistryEntry<Enchantment> included = getEnchantmentRegistry(world, wantedEnchantment);
             RegistryEntry<Enchantment> wanted = getEnchantmentRegistry(world, e);
+            System.out.println(included);
+            System.out.println(wanted);
             if (!included.equals(wanted)) {
                 canBeCombined  = Enchantment.canBeCombined(included, wanted);
             }
@@ -84,17 +86,27 @@ public class EnchantmentHelp {
             }
         }
 
-        for (EnchantmentSelectButton includedButton : enchants) {
-            for (EnchantmentSelectButton enchantButton : enchants) {
+        /* this code rejects silk touch and fortune if efficiency is present, why?? */
+        for (EnchantmentSelectButton enchantButton : enchants) {
+            // Start assuming enchantment is valid
+            boolean canBeActivated = true;
+
+            for (EnchantmentSelectButton includedButton : includedEnchants) {
                 RegistryEntry<Enchantment> included = getEnchantmentRegistry(world, includedButton.enchantment);
                 RegistryEntry<Enchantment> wanted = getEnchantmentRegistry(world, enchantButton.enchantment);
+
                 if (!included.equals(wanted)) {
-                    if(!Enchantment.canBeCombined(included, wanted)) {
-                        enchantButton.active = false;
+                    if (!Enchantment.canBeCombined(included, wanted)) {
+                        canBeActivated = false;
+                        break; // No need to check further; we found an incompatibility
                     }
                 }
             }
+
+            enchantButton.active = canBeActivated; // Set final result
         }
+
+        /* end of modifiable snippet */
 
         for (EnchantmentSelectButton enchantButton : enchants) {
             if (enchantButton.number > 0) {
