@@ -1,11 +1,13 @@
 package com.matthewperiut.entris;
 
+import com.matthewperiut.entris.config.EntrisConfig;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Queue;
 
@@ -15,6 +17,8 @@ public class Entris {
     public static boolean disableRegularEnchanting = true;
 
     public static final int MARGIN_OF_ERROR_TIME = 10;
+
+    public static boolean localConfig = true;
 
     public static class PlayerData {
         public long timeStamp;
@@ -30,7 +34,7 @@ public class Entris {
 
     public static final String MOD_ID = "entris";
 
-    public static void init() {
-
+    public static void init(Path configPath) {
+        EntrisConfig.init(configPath);
     }
 }

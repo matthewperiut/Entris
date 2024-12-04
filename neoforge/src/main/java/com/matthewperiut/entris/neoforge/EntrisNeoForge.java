@@ -3,6 +3,7 @@ package com.matthewperiut.entris.neoforge;
 import com.matthewperiut.entris.Entris;
 import com.matthewperiut.entris.EntrisClient;
 import com.matthewperiut.entris.network.client.HandleAllowEntrisPayload;
+import com.matthewperiut.entris.network.client.HandleConfigEntrisPayload;
 import com.matthewperiut.entris.network.client.HandleValidEntrisScorePayload;
 import com.matthewperiut.entris.network.payload.*;
 import com.matthewperiut.entris.network.server.HandleFinishEntrisPayload;
@@ -16,6 +17,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -28,7 +30,8 @@ import org.lwjgl.glfw.GLFW;
 public class EntrisNeoForge {
     public EntrisNeoForge(IEventBus modEventBus, ModContainer modContainer)
     {
-        Entris.init();
+        //FMLPreInitializationEvent.getModConfigurationDirectory()
+        Entris.init(FMLPaths.CONFIGDIR.get());
         modEventBus.register(EntrisNeoForge.class);
     }
 
@@ -56,6 +59,17 @@ public class EntrisNeoForge {
     @SubscribeEvent
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
+        registrar.playBidirectional(
+                ConfigEntrisPayload.ID,
+                ConfigEntrisPayload.CODEC,
+                new DirectionalPayloadHandler<>(
+                        ((payload, context) -> {
+                            HandleConfigEntrisPayload.handle(payload.pointsPerEnchant(), payload.secondsPerLevel(), payload.allowNormalEnchanting());
+                        }),
+                        ((payload, context) -> {
+                        })
+                )
+        );
         registrar.playBidirectional(
                 RequestStartEntrisPayload.ID,
                 RequestStartEntrisPayload.CODEC,

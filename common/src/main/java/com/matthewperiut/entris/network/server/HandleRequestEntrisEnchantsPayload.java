@@ -1,6 +1,7 @@
 package com.matthewperiut.entris.network.server;
 
 import com.matthewperiut.entris.client.SlotEnabler;
+import com.matthewperiut.entris.config.EntrisConfig;
 import com.matthewperiut.entris.network.ServerNetworkHelper;
 import com.matthewperiut.entris.network.payload.AllowEntrisPayload;
 import net.minecraft.enchantment.Enchantment;
@@ -33,7 +34,7 @@ public class HandleRequestEntrisEnchantsPayload {
                 ct += l;
             }
 
-            if (ct * 1000 > playerDataMap.get(player).score) {
+            if (ct * EntrisConfig.getPointsPerEnchant() > playerDataMap.get(player).score) {
                 ServerNetworkHelper.send(player, new AllowEntrisPayload(false));
                 playerDataMap.remove(player);
             } else {

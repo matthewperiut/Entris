@@ -2,6 +2,7 @@ package com.matthewperiut.entris.mixin;
 
 import com.matthewperiut.entris.Entris;
 import com.matthewperiut.entris.client.*;
+import com.matthewperiut.entris.config.EntrisConfig;
 import com.matthewperiut.entris.enchantment.EnchantmentHelp;
 import com.matthewperiut.entris.game.TetrisGame;
 import com.matthewperiut.entris.network.ClientNetworkHelper;
@@ -64,18 +65,21 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         int y = (this.height - this.entrisBackgroundHeight) / 2;
         int i = this.textRenderer.getWidth(GO_BACK);
         int j = this.width - i - 2;
-        RegularEnchantingButton = this.addDrawableChild(new PressableTextWidget(x + 1, y - 10, i, 10, GO_BACK, (button) -> {
-            setEntris(false);
-            RegularEnchantingButton.active = false;
-            RegularEnchantingButton.visible = false;
-            showInventoryButton.visible = false;
-            showInventoryButton.active = false;
-            startGameButton.visible = false;
-            startGameButton.active = false;
-            updateSlotDownStatus();
-            Entris.disableRegularEnchanting = false;
-            clearEnchantmentList();
-        }, this.textRenderer));
+
+        if (EntrisConfig.getAllowNormalEnchanting()) {
+            RegularEnchantingButton = this.addDrawableChild(new PressableTextWidget(x + 1, y - 10, i, 10, GO_BACK, (button) -> {
+                setEntris(false);
+                RegularEnchantingButton.active = false;
+                RegularEnchantingButton.visible = false;
+                showInventoryButton.visible = false;
+                showInventoryButton.active = false;
+                startGameButton.visible = false;
+                startGameButton.active = false;
+                updateSlotDownStatus();
+                Entris.disableRegularEnchanting = false;
+                clearEnchantmentList();
+            }, this.textRenderer));
+        }
 
         showInventoryButton = this.addDrawableChild(new ShowInventoryButton(x + 54, y + 46, (button -> {
             showInventory = !showInventory;
@@ -135,13 +139,13 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
                     continue;
 
                 EnchantmentSelectButton b = this.addDrawableChild(new EnchantmentSelectButton(x + 92, y + 3 + (12 * ct), enchantment, (button -> {
-                    if (tetrisGame.getScore() >= 1000) {
+                    if (tetrisGame.getScore() >= EntrisConfig.getPointsPerEnchant()) {
                         World world = MinecraftClient.getInstance().world;
                         if (rejectEnchantment(world, enchantmentSelectButtons, ((EnchantmentSelectButton)button))) {
                             return;
                         }
                         if (((EnchantmentSelectButton)button).increment()) {
-                            tetrisGame.score -= 1000;
+                            tetrisGame.score -= EntrisConfig.getPointsPerEnchant();
                             updateAvailableEnchantButtons(world, enchantmentSelectButtons);
                         }
                     }
@@ -159,10 +163,10 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
     public void beginGame() {
         if (!tetrisGame.isStarted && !tetrisGame.gameOver)
-            tetrisGame.startGame(numberHolder.getNumber() * 6);
+            tetrisGame.startGame(numberHolder.getNumber() * EntrisConfig.getSecondsPerLevel());
         else if (tetrisGame.gameOver) {
             tetrisGame = new TetrisGame();
-            tetrisGame.startGame(numberHolder.getNumber() * 6);
+            tetrisGame.startGame(numberHolder.getNumber() * EntrisConfig.getSecondsPerLevel());
         }
     }
     public void errorHandling() {
@@ -285,8 +289,10 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
                 } else {
                     context.drawText(this.textRenderer, numberHolder.getNumberStr(), this.titleX, this.titleY + 80, 0x55FFFF, false);
                 }
-                int seconds = (int)(numberHolder.getNumber() % 10) * 6;
-                context.drawText(this.textRenderer, "    LVL = " + (int) Math.floor(numberHolder.getNumber()/ 10.f)  + ":" + String.format("%02d", seconds), this.titleX, this.titleY + 80, 0x404040, false);
+                int total_seconds = EntrisConfig.getSecondsPerLevel() * numberHolder.getNumber();
+                int seconds = total_seconds % 60 ;
+                int minutes = (int) Math.floor(total_seconds / 60.0);
+                context.drawText(this.textRenderer, "    LVL = " + minutes + ":" + String.format("%02d", seconds), this.titleX, this.titleY + 80, 0x404040, false);
                 int neededLapis = (int) Math.ceil(numberHolder.getNumber() / 10.f);
                 if (tetrisGame.isStarted && !tetrisGame.gameOver) {
                     startGameButton.active = false;
@@ -327,7 +333,6 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
                 context.drawText(this.textRenderer, "TIME: " + tetrisGame.getMinutes() + ":" + String.format("%02d", tetrisGame.getSeconds()), this.titleX, this.titleY + 130, 0x404040, false);
                 context.drawText(this.textRenderer, "SCORE: " + tetrisGame.getScore(), this.titleX, this.titleY + 139, 4210752, false);
-
             }
         }
     }
@@ -366,4 +371,11 @@ abstract public class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         handle = gameInstance.getWindow().getHandle();
     }
 
+    @Override
+    public void handleVanillaEnchantingAllowance(boolean r) {
+        if (RegularEnchantingButton != null) {
+            RegularEnchantingButton.active = r;
+            RegularEnchantingButton.visible = r;
+        }
+    }
 }

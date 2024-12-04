@@ -11,6 +11,7 @@ import com.matthewperiut.entris.network.server.HandleRequestStartEntrisPayload;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,7 +37,7 @@ import static net.minecraft.util.math.MathHelper.ceil;
 public class EntrisFabric implements ModInitializer {
     @Override
     public void onInitialize() {
-        Entris.init();
+        Entris.init(FabricLoader.getInstance().getConfigDir());
 
         Registry.register(Registries.SOUND_EVENT, MOVE_SOUND_ID, MOVE_SOUND_EVENT);
         Registry.register(Registries.SOUND_EVENT, HARD_DROP_SOUND_ID, HARD_DROP_SOUND_EVENT);
@@ -45,6 +46,7 @@ public class EntrisFabric implements ModInitializer {
         Registry.register(Registries.SOUND_EVENT, SWAP_SOUND_ID, SWAP_SOUND_EVENT);
         Registry.register(Registries.SOUND_EVENT, TICK_SOUND_ID, TICK_SOUND_EVENT);
 
+        PayloadTypeRegistry.playS2C().register(ConfigEntrisPayload.ID, ConfigEntrisPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(RequestStartEntrisPayload.ID, RequestStartEntrisPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(AllowEntrisPayload.ID, AllowEntrisPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(FinishEntrisPayload.ID, FinishEntrisPayload.CODEC);

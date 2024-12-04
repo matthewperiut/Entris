@@ -11,7 +11,8 @@
   "mixins": [
     "EnchantmentScreenHandlerMixin",
     "EnchantmentScreenMixin",
-    "SlotMixin"
+    "SlotMixin",
+    "EnchantingTableBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

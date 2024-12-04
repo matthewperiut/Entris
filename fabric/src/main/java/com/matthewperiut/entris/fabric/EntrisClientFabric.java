@@ -2,8 +2,10 @@ package com.matthewperiut.entris.fabric;
 
 import com.matthewperiut.entris.EntrisClient;
 import com.matthewperiut.entris.network.client.HandleAllowEntrisPayload;
+import com.matthewperiut.entris.network.client.HandleConfigEntrisPayload;
 import com.matthewperiut.entris.network.client.HandleValidEntrisScorePayload;
 import com.matthewperiut.entris.network.payload.AllowEntrisPayload;
+import com.matthewperiut.entris.network.payload.ConfigEntrisPayload;
 import com.matthewperiut.entris.network.payload.ValidEntrisScorePayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -16,6 +18,12 @@ import org.lwjgl.glfw.GLFW;
 public class EntrisClientFabric implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        ClientPlayNetworking.registerGlobalReceiver(ConfigEntrisPayload.ID, (payload, context) -> {
+            context.client().execute(() -> {
+                HandleConfigEntrisPayload.handle(payload.pointsPerEnchant(), payload.secondsPerLevel(), payload.allowNormalEnchanting());
+            });
+        });
+
         ClientPlayNetworking.registerGlobalReceiver(AllowEntrisPayload.ID, (payload, context) -> {
             context.client().execute(() -> {
                 HandleAllowEntrisPayload.handle(payload.allow());

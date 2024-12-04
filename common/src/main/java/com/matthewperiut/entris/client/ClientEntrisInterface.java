@@ -4,4 +4,5 @@ public interface ClientEntrisInterface {
     void beginGame();
     void errorHandling();
     void validifyScore(int score);
+    void handleVanillaEnchantingAllowance(boolean r);
 }
